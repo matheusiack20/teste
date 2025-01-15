@@ -1,0 +1,49 @@
+{
+  "order_id": "or_yG4qMWBipi8ZKOYX",
+  "payment_method": "credit_card",
+  "amount": 1000,
+  "credit_card": {
+    "card_number": "4111111111111111",
+    "card_cvv": "123",
+    "card_expiration_date": "1225",
+    "card_holder_name": "Test User",
+    "billing_address": {
+      "country": "BR",
+      "state": "SP",
+      "city": "Sao Paulo",
+      "neighborhood": "Jardim Paulista",
+      "street": "Av. Paulista",
+      "street_number": "1000",
+      "zip_code": "01310000"
+    }
+  },
+  "customer": {
+    "name": "Test User",
+    "email": "test.user@example.com",
+    "document": "12345678909",
+    "type": "individual",
+    "phones": {
+      "home_phone": {
+        "country_code": "55",
+        "area_code": "11",
+        "number": "999999999"
+      }
+    }
+  },
+  "items": [
+    {
+      "id": "item_1",
+      "title": "Product 1",
+      "unit_price": 500,
+      "quantity": 1,
+      "tangible": true
+    },
+    {
+      "id": "item_2",
+      "title": "Product 2",
+      "unit_price": 500,
+      "quantity": 1,
+      "tangible": true
+    }
+  ]
+}

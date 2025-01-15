@@ -1,0 +1,340 @@
+/* Body Styles */
+body {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center;    /* Centraliza verticalmente */
+  min-height: 100vh;      /* Garante altura total da tela */
+  margin: 0;
+  background: linear-gradient(to bottom right, #dafd00, white);
+    font-family: 'Roboto', Arial, sans-serif;
+  color: #FFFFFF;
+}
+
+/* Form Section */
+.form-section, .review-section {
+  width: 100%;
+  max-width: 600px; /* Aumenta largura máxima */
+  background: #282828; /* Fundo escuro */
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); /* Sombra destacada */
+  animation: fadeIn 0.5s ease-in-out;
+  border: 2px solid #deff08; /* Borda azul */
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Heading */
+.form-section h2, .review-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #FFFFFF;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border-bottom: 2px solid #deff08; /* Destaque azul */
+  padding-bottom: 10px;
+}
+
+/* Input Fields */
+form input {
+  width: 100%;
+  padding: 14px 15px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #000000; /* Cinza médio */
+  color: #FFFFFF;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra interna */
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+form input:focus {
+  outline: none;
+  background: #deff08; /* Destaque azul */
+  color: #282828;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon input {
+  padding-right: 60px; /* Espaço para a imagem */
+}
+
+.card-flag-icon {
+  position: absolute;
+  right: 10px;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 50px; /* Tamanho fixo */
+  height: 30px; /* Tamanho fixo */
+}
+
+/* Form Buttons */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.button-primary {
+  flex: 1;
+  background: #deff08; /* Azul */
+  color: #000000; /* Texto branco */
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-primary:hover {
+  background: #4caf50; /* Azul mais escuro */
+  transform: scale(1.05);
+}
+
+.button-secondary {
+  flex: 1;
+  background: #757474; /* Cinza claro */
+  color: #FFFFFF;
+  border: 2px solid #757474; /* Destaque na borda */
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-secondary:hover {
+  background: #929292; /* Cinza mais claro */
+  transform: scale(1.05);
+}
+
+/* Progress Bar */
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  text-align: center;
+  font-size: 14px;
+  color: #757474; /* Cor padrão */
+}
+
+.progress-step.current {
+  color: #16a08b; /* Cor da etapa ativa */
+  font-weight: bold;
+}
+
+.progress-step.completed {
+  color: #4caf50; /* Verde para etapas concluídas */
+  font-weight: bold;
+}
+
+.step-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #000000; /* Cor padrão */
+  color: #fff;
+  font-size: 16px;
+}
+
+.progress-step.completed .step-icon {
+  background-color: #4caf50; /* Fundo verde para etapas concluídas */
+}
+
+.progress-step.current .step-icon {
+  background-color: #16a08b; /* Fundo amarelo para etapa ativa */
+  color: #282828; /* Texto preto para contraste */
+}
+
+.step-label {
+  margin-top: 8px;
+}
+
+/* Review Section */
+.review-section h3 {
+  font-size: 20px;
+  color: #deff08; /* Cor de destaque */
+  margin-bottom: 10px;
+  border-bottom: 1px solid #deff08; /* Linha de destaque */
+  padding-bottom: 5px;
+  text-align: center; /* Centraliza o texto */
+}
+
+.review-section p {
+  font-size: 16px;
+  color: #ffffff; /* Texto branco */
+  margin: 5px 0;
+}
+
+.review-section .form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.review-section .button-primary {
+  flex: 1;
+  background: #deff08; /* Azul */
+  color: #000000; /* Texto branco */
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.review-section .button-primary:hover {
+  background: #4caf50; /* Azul mais escuro */
+  transform: scale(1.05);
+}
+
+.review-section .button-secondary {
+  flex: 1;
+  background: #757474; /* Cinza claro */
+  color: #FFFFFF;
+  border: 2px solid #757474; /* Destaque na borda */
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.review-section .button-secondary:hover {
+  background: #929292; /* Cinza mais claro */
+  transform: scale(1.05);
+}
+
+/* Pop-up de erro */
+.error-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ff4d4d; /* Fundo vermelho */
+  color: #ffffff; /* Texto branco */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+  z-index: 1000; /* Garantir que o pop-up fique acima de outros elementos */
+  width: 300px; /* Largura fixa */
+  max-width: 90%; /* Largura máxima responsiva */
+  text-align: center; /* Centraliza o texto */
+}
+
+/* Estilos para desfocar o fundo quando um pop-up estiver visível */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+  backdrop-filter: blur(5px); /* Desfoca o fundo */
+  z-index: 999; /* Abaixo do pop-up */
+}
+
+.error-popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error-popup-message {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.error-popup-close {
+  background: #ffffff; /* Fundo branco */
+  color: #ff4d4d; /* Texto vermelho */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.error-popup-close:hover {
+  background: #f2f2f2; /* Fundo cinza claro */
+  transform: scale(1.05);
+}
+
+/* Pop-up de sucesso */
+.success-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #4caf50; /* Fundo verde */
+  color: #ffffff; /* Texto branco */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+  z-index: 1000; /* Garantir que o pop-up fique acima de outros elementos */
+  width: 300px; /* Largura fixa */
+  max-width: 90%; /* Largura máxima responsiva */
+  text-align: center; /* Centraliza o texto */
+}
+
+.success-popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-popup-message {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.success-popup-close {
+  background: #ffffff; /* Fundo branco */
+  color: #4caf50; /* Texto verde */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.success-popup-close:hover {
+  background: #f2f2f2; /* Fundo cinza claro */
+  transform: scale(1.05);
+}
+

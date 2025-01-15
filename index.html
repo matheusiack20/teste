@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://assets.pagar.me/pagarme-js/4.9/pagarme.min.js"></script>
+    <script src="checkout.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <form id="checkout-form">
+        <input type="text" id="card-number" placeholder="Número do Cartão" required>
+        <input type="text" id="card-holder-name" placeholder="Nome no Cartão" required>
+        <input type="text" id="card-expiration-date" placeholder="Data de Expiração (MM/AA)" required>
+        <input type="text" id="card-cvv" placeholder="CVV" required>
+        <button type="submit">Pagar</button>
+    </form>
+
+    <script>
+        async function createTransaction(cardHash, amount) {
+            try {
+                const response = await fetch('/create-transaction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        card_hash: cardHash,
+                        amount: amount
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Pagamento realizado com sucesso!');
+                } else {
+                    alert('Falha no pagamento: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Erro ao criar transação:', error);
+            }
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const card = {
+                card_number: document.getElementById('card-number').value,
+                card_holder_name: document.getElementById('card-holder-name').value,
+                card_expiration_date: document.getElementById('card-expiration-date').value,
+                card_cvv: document.getElementById('card-cvv').value
+            };
+
+            try {
+                const cardHash = await pagarme.client.connect({ encryption_key: process.env.PAGARME_PUBLIC_KEY })
+                    .then(client => client.security.encrypt(card));
+
+                createTransaction(cardHash, 1000); // Valor da transação em centavos (R$ 10,00)
+            } catch (error) {
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

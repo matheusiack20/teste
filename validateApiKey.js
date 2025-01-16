@@ -1,5 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import pagarme from 'pagarme';
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ if (!apiKey || !publicKey || !authorization) {
 
 // Configuração do axios com autenticação
 const axiosInstance = axios.create({
-  baseURL: 'https://api.pagar.me/core/v5',
+  baseURL: 'https://api.pagar.me/core/v5', // Corrigido para a versão correta da API
   headers: {
     'Content-Type': 'application/json',
     'Authorization': authorization
@@ -48,7 +49,9 @@ const createCustomer = async () => {
           area_code: '11',
           number: '999999999'
         }
-      }
+      },
+      external_id: '123456', // Adicione o campo external_id
+      country: 'BR' // Adicione o campo country
     };
 
     console.log('Enviando dados do cliente para o endpoint /customers:', JSON.stringify(customerData, null, 2));
@@ -316,6 +319,12 @@ const handleAxiosError = (error) => {
     if (error.response.status === 403) {
       console.error('Erro 403: Acesso proibido. Verifique suas credenciais e permissões.');
     }
+    if (error.response.status === 405) {
+      console.error('Erro 405: Método HTTP não permitido para este recurso.');
+    }
+    if (error.response.status === 400) {
+      console.error('Erro 400: Erro de validação. Verifique os dados enviados.');
+    }
     if (error.response.data && error.response.data.gateway_response) {
       console.error('Gateway response errors:', JSON.stringify(error.response.data.gateway_response.errors, null, 2));
     }
@@ -355,3 +364,60 @@ const checkout = async () => {
 };
 
 checkout();
+
+// Função para validar a chave da API e criar uma transação
+const validateAndCheckout = async () => {
+  try {
+    // Validar API key
+    if (!process.env.PAGARME_API_KEY) {
+      throw new Error('Chave API Pagar.me não configurada');
+    }
+
+    // Inicializar cliente
+    const client = await pagarme.client.connect({
+      api_key: process.env.PAGARME_API_KEY
+    });
+
+    // Criar transação
+    const transaction = await client.transactions.create({
+      amount: 1000, // R$ 10,00
+      card_number: '4111111111111111',
+      card_holder_name: 'Cliente Teste',
+      card_expiration_date: '1225',
+      card_cvv: '123',
+      customer: {
+        external_id: '#123',
+        name: 'Cliente Teste',
+        email: 'cliente@teste.com',
+        type: 'individual',
+        country: 'br',
+        documents: [{
+          type: 'cpf',
+          number: '00000000000'
+        }]
+      }
+    });
+
+    console.log('Transação criada:', transaction);
+    return transaction;
+
+  } catch (error) {
+    console.error('Detalhes do erro:', {
+      message: error.message,
+      status: error.status,
+      response: error.response
+    });
+
+    if (error.response?.status === 403) {
+      console.error('Erro de autenticação: Verifique sua chave API');
+    }
+    
+    throw error;
+  }
+};
+
+// Executar com tratamento
+validateAndCheckout().catch(error => {
+  console.error('Falha na operação:', error.message);
+  process.exit(1);
+});

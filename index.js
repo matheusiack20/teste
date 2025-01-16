@@ -22,16 +22,28 @@ async function processPayment(transactionData) {
 }
 
 async function handleCreateClient() {
-    const clientData = {
-        // ...dados do cliente...
-    };
+  const clientData = {
+    external_id: '#123456789',
+    name: 'Nome do Cliente',
+    type: 'individual',
+    country: 'br',
+    email: 'cliente@example.com',
+    documents: [
+      {
+        type: 'cpf',
+        number: '12345678909'
+      }
+    ],
+    phone_numbers: ['+5511999999999'],
+    birthday: '1985-01-01'
+  };
 
-    try {
-        const result = await createClient(clientData);
-        console.log('Cliente criado com sucesso:', result);
-    } catch (error) {
-        console.error('Erro ao criar cliente:', error);
-    }
+  try {
+    const result = await createClient(clientData);
+    console.log('Cliente criado com sucesso:', result);
+  } catch (error) {
+    console.error('Erro ao criar cliente:', error);
+  }
 }
 
 // Exemplo de dados da transação
@@ -94,6 +106,7 @@ const transactionData = {
   ]
 };
 
+handleCreateClient();
 processPayment(transactionData);
 
 // ...existing code...

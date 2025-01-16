@@ -1,14 +1,16 @@
-const stripe = require('stripe')('sua_chave_secreta_stripe');
-const { validateApiKey } = require('./validateApiKey');
+import pagarme from 'pagarme';
+import { validateApiKey } from './validateApiKey';
 
-async function createCustomer(email, name) {
-    return await stripe.customers.create({
-        email: email,
-        name: name
+export async function createCustomer(apiKey, email, name) {
+    return await pagarme.client.connect({ api_key: apiKey }).then(client => {
+        return client.customers.create({
+            email: email,
+            name: name
+        });
     });
 }
 
-async function createOrder(customerId, items) {
+export async function createOrder(apiKey, customerId, items) {
     // Lógica para criar um pedido
     // Exemplo:
     return {
@@ -19,37 +21,47 @@ async function createOrder(customerId, items) {
     };
 }
 
-async function generateCardToken(cardDetails) {
-    return await stripe.tokens.create({
-        card: cardDetails
-    });
+export async function generateCardToken(apiKey, cardDetails) {
+    const client = await pagarme.client.connect({ api_key: apiKey });
+    return await client.cards.create(cardDetails);
 }
 
-async function createCharge(customerId, amount, currency, source) {
-    return await stripe.charges.create({
+export async function createCharge(apiKey, customerId, amount, currency, cardId) {
+    const client = await pagarme.client.connect({ api_key: apiKey });
+    return await client.transactions.create({
         amount: amount,
-        currency: currency,
-        customer: customerId,
-        source: source
+        payment_method: 'credit_card',
+        card_id: cardId,
+        customer: {
+            id: customerId
+        },
+        billing: {
+            name: 'Billing Name',
+            address: {
+                country: 'br',
+                state: 'sp',
+                city: 'São Paulo',
+                neighborhood: 'Bela Vista',
+                street: 'Avenida Paulista',
+                street_number: '1000',
+                zipcode: '01310000'
+            }
+        }
     });
 }
 
-async function checkout(apiKey, email, name, items, cardDetails, amount, currency) {
+export async function checkout(apiKey, email, name, items, cardDetails, amount, currency) {
     if (!validateApiKey(apiKey)) {
         throw new Error('API Key inválida');
     }
 
-    const customer = await createCustomer(email, name);
-    const order = await createOrder(customer.id, items);
-    const token = await generateCardToken(cardDetails);
-    const charge = await createCharge(customer.id, amount, currency, token.id);
+    const customer = await createCustomer(apiKey, email, name);
+    const order = await createOrder(apiKey, customer.id, items);
+    const card = await generateCardToken(apiKey, cardDetails);
+    const charge = await createCharge(apiKey, customer.id, amount, currency, card.id);
 
     return {
         order: order,
         charge: charge
     };
 }
-
-module.exports = {
-    checkout
-};

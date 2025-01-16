@@ -1,21 +1,13 @@
-import React from 'react';
-import App from 'next/app';
-import { format } from 'date-fns';
+import React, { useEffect } from 'react';
 
-class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props;
-    const formattedDate = format(new Date(), 'yyyy-MM-dd');
+function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Código que depende do objeto `window`
+    }
+  }, []);
 
-    return (
-      <div>
-        {/* ...existing code... */}
-        <p>Formatted Date: {formattedDate}</p>
-        <Component {...pageProps} />
-        {/* ...existing code... */}
-      </div>
-    );
-  }
+  return <Component {...pageProps} />;
 }
 
 export default MyApp;

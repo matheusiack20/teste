@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
 const ExampleComponent = () => {
-  const [currentTime, setCurrentTime] = useState(null);
+  const [randomNumber, setRandomNumber] = useState(null);
+  const [currentDate, setCurrentDate] = useState(null);
 
   useEffect(() => {
-    setCurrentTime(Date.now());
+    setRandomNumber(Math.random());
+    setCurrentDate(new Date().toISOString());
   }, []);
 
   return (
     <div>
-      {/* ...existing code... */}
-      {currentTime && <p>Current Time: {currentTime}</p>}
-      {/* ...existing code... */}
+      {/* Renderização condicional baseada no ambiente */}
+      {typeof window !== 'undefined' && (
+        <>
+          <p>Random Number: {randomNumber}</p>
+          <p>Current Date: {currentDate}</p>
+        </>
+      )}
     </div>
   );
 };

@@ -2,26 +2,35 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+console.log('Environment variables loaded:', process.env);
+
 const apiKey = process.env.PAGARME_API_KEY;
 const publicKey = process.env.NEXT_PUBLIC_PAGARME_PUBLIC_KEY;
+const authorization = process.env.AUTHORIZATION;
 
-if (!apiKey || !publicKey) {
-  console.error('API key or Public key missing. Check .env file.');
+console.log('PAGARME_API_KEY:', apiKey);
+console.log('NEXT_PUBLIC_PAGARME_PUBLIC_KEY:', publicKey);
+console.log('AUTHORIZATION:', authorization);
+
+if (!apiKey || !publicKey || !authorization) {
+  console.error('API key, Public key, or Authorization missing. Check .env file.');
   process.exit(1);
 }
 
+// Configuração do axios com autenticação
 const axiosInstance = axios.create({
-  baseURL: 'https://api.pagar.me/core/v5', // Ajuste da versão da API para v5
-  auth: {
-    username: apiKey,
-    password: ''
-  },
+  baseURL: 'https://api.pagar.me/core/v5',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Authorization': authorization
   }
 });
 
-export const createCustomer = async () => {
+console.log('Axios instance configured with baseURL:', axiosInstance.defaults.baseURL);
+console.log('Authorization header:', axiosInstance.defaults.headers['Authorization']);
+
+const createCustomer = async () => {
   try {
     const customerData = {
       name: 'Test User',
@@ -42,17 +51,28 @@ export const createCustomer = async () => {
       }
     };
 
-    console.log('Enviando dados do cliente:', JSON.stringify(customerData, null, 2));
+    console.log('Enviando dados do cliente para o endpoint /customers:', JSON.stringify(customerData, null, 2));
     const { data: customer } = await axiosInstance.post('/customers', customerData);
     console.log('Customer created:', JSON.stringify(customer, null, 2));
 
+    if (!customer || !customer.id) {
+      throw new Error('Resposta da API não contém o objeto esperado.');
+    }
+
     return customer;
   } catch (error) {
+    console.error('Erro ao tentar criar o cliente:', error.message);
+    if (error.response) {
+      console.error('Status:', error.response.status);
+      console.error('Response headers:', JSON.stringify(error.response.headers, null, 2));
+      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+    }
     handleAxiosError(error);
+    throw new Error('Erro ao criar o cliente.');
   }
 };
 
-export const createOrder = async (customerId) => {
+const createOrder = async (customerId) => {
   try {
     const orderData = {
       items: [
@@ -160,7 +180,7 @@ export const createOrder = async (customerId) => {
   }
 };
 
-export const generateCardToken = async () => {
+const generateCardToken = async () => {
   try {
     const cardData = {
       type: 'card',
@@ -206,7 +226,7 @@ export const generateCardToken = async () => {
   }
 };
 
-export const createCharge = async (orderId, cardToken, customerId) => {
+const createCharge = async (orderId, cardToken, customerId) => {
   try {
     const chargeData = {
       order_id: orderId,
@@ -293,27 +313,44 @@ const handleAxiosError = (error) => {
   if (error.response) {
     console.error('Status:', error.response.status);
     console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+    if (error.response.status === 403) {
+      console.error('Erro 403: Acesso proibido. Verifique suas credenciais e permissões.');
+    }
     if (error.response.data && error.response.data.gateway_response) {
       console.error('Gateway response errors:', JSON.stringify(error.response.data.gateway_response.errors, null, 2));
     }
+  } else {
+    console.error('Erro sem resposta da API:', error);
   }
 };
 
 const checkout = async () => {
   try {
     const customer = await createCustomer();
+    if (!customer) {
+      throw new Error('Falha ao criar o cliente.');
+    }
     console.log('Customer created:', customer);
 
     const order = await createOrder(customer.id);
+    if (!order) {
+      throw new Error('Falha ao criar o pedido.');
+    }
     console.log('Order created:', order);
 
     const cardToken = await generateCardToken();
+    if (!cardToken) {
+      throw new Error('Falha ao gerar o token do cartão.');
+    }
     console.log('Card token generated:', cardToken);
 
     const charge = await createCharge(order.id, cardToken, customer.id);
+    if (!charge) {
+      throw new Error('Falha ao criar a cobrança.');
+    }
     console.log('Charge created:', charge);
   } catch (error) {
-    console.error('Erro ao processar pagamento:', error);
+    console.error('Erro ao processar pagamento:', error.message);
   }
 };
 

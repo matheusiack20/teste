@@ -260,6 +260,7 @@ export default function Checkout() {
           country: "BR",
         },
       });
+      console.log('Card token generated:', cardToken);
 
       if (cardToken) {
         const customer = await createCustomer({
@@ -280,8 +281,9 @@ export default function Checkout() {
             }
           }
         });
+        console.log('Customer created:', customer);
 
-        if (customer) {
+        if (customer && customer.id) {
           const order = await createOrder(customer.id, {
             items: [
               {
@@ -349,13 +351,19 @@ export default function Checkout() {
             closed: false,
             status: 'open'
           });
+          console.log('Order created:', order);
 
-          if (order) {
+          if (order && order.id) {
             const charge = await createCharge(order.id, cardToken, customer.id);
+            console.log('Charge created:', charge);
             if (charge) {
               setSuccessMessage("Compra finalizada com sucesso!");
             }
+          } else {
+            console.error('Erro ao criar o pedido:', order);
           }
+        } else {
+          console.error('Erro ao criar o cliente:', customer);
         }
       }
     } catch (error) {
@@ -407,6 +415,8 @@ export default function Checkout() {
             <form>
               <input
                 type="text"
+                id="name"
+                name="name"
                 placeholder="Nome Completo"
                 value={formData.identification.name || ""}
                 onChange={(e) =>
@@ -416,6 +426,8 @@ export default function Checkout() {
               />
               <input
                 type="email"
+                id="email"
+                name="email"
                 placeholder="E-mail"
                 value={formData.identification.email || ""}
                 onChange={(e) =>
@@ -425,6 +437,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="cpfCnpj"
+                name="cpfCnpj"
                 placeholder="CPF ou CNPJ"
                 value={
                   formData.identification.cpf ||
@@ -445,6 +459,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="phone"
+                name="phone"
                 placeholder="Celular com DDD"
                 value={formData.identification.phone || ""}
                 onChange={(e) =>
@@ -480,6 +496,8 @@ export default function Checkout() {
             <form>
               <input
                 type="text"
+                id="cep"
+                name="cep"
                 placeholder="CEP"
                 value={formData.address.cep || ""}
                 onChange={(e) =>
@@ -495,6 +513,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="number"
+                name="number"
                 placeholder="Número"
                 value={formData.address.number || ""}
                 onChange={(e) =>
@@ -504,6 +524,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="complement"
+                name="complement"
                 placeholder="Complemento (opcional)"
                 value={formData.address.complement || ""}
                 onChange={(e) =>
@@ -557,6 +579,8 @@ export default function Checkout() {
               <div className="input-with-icon">
                 <input
                   type="text"
+                  id="cardNumber"
+                  name="cardNumber"
                   placeholder="Número do Cartão"
                   value={formData.payment.cardNumber || ""}
                   onChange={(e) =>
@@ -578,6 +602,8 @@ export default function Checkout() {
               </div>
               <input
                 type="text"
+                id="cardName"
+                name="cardName"
                 placeholder="Nome no Cartão"
                 value={formData.payment.cardName || ""}
                 onChange={(e) =>
@@ -587,6 +613,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="expiry"
+                name="expiry"
                 placeholder="Validade (MM/AA)"
                 value={formData.payment.expiry || ""}
                 onChange={(e) =>
@@ -596,6 +624,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="cvv"
+                name="cvv"
                 placeholder="CVV"
                 value={formData.payment.cvv || ""}
                 onChange={(e) =>
@@ -631,6 +661,8 @@ export default function Checkout() {
             <form>
               <input
                 type="text"
+                id="description"
+                name="description"
                 placeholder="Descrição do Item"
                 value={formData.item.description || ""}
                 onChange={(e) =>
@@ -640,6 +672,8 @@ export default function Checkout() {
               />
               <input
                 type="number"
+                id="quantity"
+                name="quantity"
                 placeholder="Quantidade"
                 value={formData.item.quantity || ""}
                 onChange={(e) =>
@@ -649,6 +683,8 @@ export default function Checkout() {
               />
               <input
                 type="number"
+                id="amount"
+                name="amount"
                 placeholder="Valor (em centavos)"
                 value={formData.item.amount || ""}
                 onChange={(e) =>
@@ -658,6 +694,8 @@ export default function Checkout() {
               />
               <input
                 type="text"
+                id="code"
+                name="code"
                 placeholder="Código do Item"
                 value={formData.item.code || ""}
                 onChange={(e) =>

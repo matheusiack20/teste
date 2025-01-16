@@ -17,13 +17,23 @@ export async function createOrder(customerId: string, orderData: any): Promise<a
     };
 }
 
-export async function generateCardToken(p0?: {
-    number: string | undefined; holder_name: string | undefined; holder_document: string | undefined; exp_month: number; exp_year // Lógica para criar um cliente
-      : number; cvv: string | undefined; brand: "visa" | "mastercard" | "american-express" | "elo" | "diners-club" | "discover" | "jcb" | "hiper" | null; billing_address: {
-        line_1: string; line_2: string; zip_code // Lógica para criar um pedido
-          : string | undefined; city: string | undefined; state: string | undefined; country: string;
-      };
-  }): Promise<string> {
+export async function generateCardToken(cardData: {
+    number: string | undefined;
+    holder_name: string | undefined;
+    holder_document: string | undefined;
+    exp_month: number;
+    exp_year: number;
+    cvv: string | undefined;
+    brand: "visa" | "mastercard" | "american-express" | "elo" | "diners-club" | "discover" | "jcb" | "hiper" | null;
+    billing_address: {
+        line_1: string;
+        line_2: string | undefined;
+        zip_code: string | undefined;
+        city: string | undefined;
+        state: string | undefined;
+        country: string;
+    };
+}): Promise<string> {
     // Lógica para gerar um token de cartão
     return "card_token";
 }

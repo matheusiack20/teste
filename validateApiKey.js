@@ -8,14 +8,12 @@ console.log('Environment variables loaded:', process.env);
 
 const apiKey = process.env.PAGARME_API_KEY;
 const publicKey = process.env.NEXT_PUBLIC_PAGARME_PUBLIC_KEY;
-const authorization = process.env.AUTHORIZATION;
 
 console.log('PAGARME_API_KEY:', apiKey);
 console.log('NEXT_PUBLIC_PAGARME_PUBLIC_KEY:', publicKey);
-console.log('AUTHORIZATION:', authorization);
 
-if (!apiKey || !publicKey || !authorization) {
-  console.error('API key, Public key, or Authorization missing. Check .env file.');
+if (!apiKey || !publicKey) {
+  console.error('API key or Public key missing. Check .env file.');
   process.exit(1);
 }
 
@@ -24,7 +22,7 @@ const axiosInstance = axios.create({
   baseURL: 'https://api.pagar.me/core/v5', // Corrigido para a versão correta da API
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': authorization
+    'Authorization': `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`
   }
 });
 
@@ -408,6 +406,10 @@ const validateAndCheckout = async () => {
       response: error.response
     });
 
+    if (error.response) {
+      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+    }
+
     if (error.response?.status === 403) {
       console.error('Erro de autenticação: Verifique sua chave API');
     }
@@ -419,5 +421,8 @@ const validateAndCheckout = async () => {
 // Executar com tratamento
 validateAndCheckout().catch(error => {
   console.error('Falha na operação:', error.message);
+  if (error.response) {
+    console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+  }
   process.exit(1);
 });

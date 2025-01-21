@@ -10,6 +10,7 @@ function processOrder(order) {
     // ...existing code to process the order...
 
     notifyImportant(`Order ${order.id} processed.`);
+    console.log('Token gerado:', order.token); // Exibir o token gerado
 }
 
 function notifyUser(order) {

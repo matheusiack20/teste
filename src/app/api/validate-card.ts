@@ -10,7 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log("Usando a chave da API:", process.env.PAGARME_API_KEY);
 
     try {
-      const client = await pagarme.client.connect({ api_key: process.env.PAGARME_API_KEY });
+      const apiKey = process.env.PAGARME_API_KEY;
+      if (!apiKey) {
+        throw new Error('PAGARME_API_KEY is not defined');
+      }
+      const client = await pagarme.client.connect({ api_key: apiKey });
 
       // Tenta criar uma transação de teste para validar o cartão
       const transaction = await client.transactions.create({

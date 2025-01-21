@@ -17,6 +17,7 @@ const orderData = {
 createOrder(orderData)
     .then(order => {
         console.log('Pedido criado:', order);
+        console.log('Token gerado:', order.token); // Exibir o token gerado
     })
     .catch(error => {
         console.error('Erro ao criar o pedido:', error);

@@ -1,79 +1,78 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios';
 import dotenv from 'dotenv';
-import pagarme from 'pagarme';
+import base64 from 'base-64';
 
 dotenv.config();
-
-console.log('Environment variables loaded:', process.env);
-
 const apiKey = process.env.PAGARME_API_KEY;
 const publicKey = process.env.NEXT_PUBLIC_PAGARME_PUBLIC_KEY;
-
-console.log('PAGARME_API_KEY:', apiKey);
-console.log('NEXT_PUBLIC_PAGARME_PUBLIC_KEY:', publicKey);
 
 if (!apiKey || !publicKey) {
   console.error('API key or Public key missing. Check .env file.');
   process.exit(1);
 }
 
-// Configuração do axios com autenticação
+const API_KEY = 'sk_test_00828b38f6f0413f8eddc1ae66523cf2'; // Substitua pela sua chave de API válida
+const API_URL = 'https://api.pagar.me/core/v5';
+
+// Configuração do Axios
 const axiosInstance = axios.create({
-  baseURL: 'https://api.pagar.me/core/v5', // Corrigido para a versão correta da API
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Basic ${Buffer.from(`${apiKey}:`).toString('base64')}`
-  }
+    Authorization: `Basic ${base64.encode(API_KEY + ':')}`,
+  },
 });
 
-console.log('Axios instance configured with baseURL:', axiosInstance.defaults.baseURL);
-console.log('Authorization header:', axiosInstance.defaults.headers['Authorization']);
-
-const createCustomer = async () => {
-  try {
-    const customerData = {
-      name: 'Test User',
-      email: 'test@example.com',
-      type: 'individual',
-      documents: [
-        { type: 'cpf', number: '12345678909' }
-      ],
-      phone_numbers: ['+5511999999999'],
-      birthday: '1990-01-01',
-      document: '12345678909', // Adicione o documento do cliente aqui
-      phones: {
-        mobile_phone: {
-          country_code: '55',
-          area_code: '11',
-          number: '999999999'
-        }
+export const createCustomer = async () => {
+  const customerData = {
+    type: 'individual',
+    name: 'Tony Stark',
+    email: 'avengerstark@ligadajustica.com.br',
+    document_type: 'CPF',
+    document: '03154435026',
+    gender: 'male',
+    birthdate: '1993-09-01',
+    phones: {
+      home_phone: {
+        country_code: '55',
+        area_code: '11',
+        number: '000000000',
       },
-      external_id: '123456', // Adicione o campo external_id
-      country: 'BR' // Adicione o campo country
-    };
+      mobile_phone: {
+        country_code: '55',
+        area_code: '11',
+        number: '000000000',
+      },
+    },
+    address: {
+      line_1: '7221, Avenida Dra Ruth Cardoso, Pinheiros',
+      line_2: 'Prédio',
+      zip_code: '05425070',
+      city: 'São Paulo',
+      state: 'SP',
+      country: 'BR',
+    },
+    code: '123',
+    metadata: {
+      company: 'Lannister',
+    },
+  };
 
-    console.log('Enviando dados do cliente para o endpoint /customers:', JSON.stringify(customerData, null, 2));
-    const { data: customer } = await axiosInstance.post('/customers', customerData);
-    console.log('Customer created:', JSON.stringify(customer, null, 2));
+  try {
+    console.log('Enviando dados do cliente:', JSON.stringify(customerData, null, 2));
+    console.log('Headers:', JSON.stringify(axiosInstance.defaults.headers, null, 2)); // Log dos cabeçalhos
 
-    if (!customer || !customer.id) {
-      throw new Error('Resposta da API não contém o objeto esperado.');
-    }
-
-    return customer;
+    const response = await axiosInstance.post('/customers', customerData);
+    console.log('Cliente criado com sucesso:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('Erro ao tentar criar o cliente:', error.message);
-    if (error.response) {
-      console.error('Status:', error.response.status);
-      console.error('Response headers:', JSON.stringify(error.response.headers, null, 2));
-      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
-    }
     handleAxiosError(error);
-    throw new Error('Erro ao criar o cliente.');
+    throw new Error('Falha ao criar cliente');
   }
 };
 
-const createOrder = async (customerId) => {
+export const createOrder = async (customerId) => {
   try {
     const orderData = {
       items: [
@@ -181,7 +180,7 @@ const createOrder = async (customerId) => {
   }
 };
 
-const generateCardToken = async () => {
+export const generateCardToken = async () => {
   try {
     const cardData = {
       type: 'card',
@@ -227,7 +226,7 @@ const generateCardToken = async () => {
   }
 };
 
-const createCharge = async (orderId, cardToken, customerId) => {
+export const createCharge = async (orderId, cardToken, customerId) => {
   try {
     const chargeData = {
       order_id: orderId,
@@ -310,119 +309,61 @@ const updateOrderStatus = async (orderId, status) => {
 };
 
 const handleAxiosError = (error) => {
-  console.error('Error:', error.message);
   if (error.response) {
+    console.error('Erro na resposta da API:', error.response.data);
     console.error('Status:', error.response.status);
-    console.error('Response data:', JSON.stringify(error.response.data, null, 2));
-    if (error.response.status === 403) {
-      console.error('Erro 403: Acesso proibido. Verifique suas credenciais e permissões.');
-    }
-    if (error.response.status === 405) {
-      console.error('Erro 405: Método HTTP não permitido para este recurso.');
-    }
-    if (error.response.status === 400) {
-      console.error('Erro 400: Erro de validação. Verifique os dados enviados.');
-    }
-    if (error.response.data && error.response.data.gateway_response) {
-      console.error('Gateway response errors:', JSON.stringify(error.response.data.gateway_response.errors, null, 2));
-    }
+    console.error('Headers:', error.response.headers);
+  } else if (error.request) {
+    console.error('Erro na requisição:', error.request);
   } else {
-    console.error('Erro sem resposta da API:', error);
+    console.error('Erro desconhecido:', error.message);
   }
+};
+
+const getPagarmeErrorMessage = (error) => {
+  if (error.response && error.response.data && error.response.data.errors) {
+    return error.response.data.errors.map(err => err.message).join(', ');
+  }
+  return 'Erro desconhecido';
 };
 
 const checkout = async () => {
   try {
     const customer = await createCustomer();
-    if (!customer) {
-      throw new Error('Falha ao criar o cliente.');
+    if (!customer || !customer.id) {
+      throw new Error('Failed to create customer.');
     }
     console.log('Customer created:', customer);
 
     const order = await createOrder(customer.id);
-    if (!order) {
-      throw new Error('Falha ao criar o pedido.');
+    if (!order || !order.id) {
+      throw new Error('Failed to create order.');
     }
     console.log('Order created:', order);
 
     const cardToken = await generateCardToken();
     if (!cardToken) {
-      throw new Error('Falha ao gerar o token do cartão.');
+      throw new Error('Failed to generate card token.');
     }
     console.log('Card token generated:', cardToken);
 
     const charge = await createCharge(order.id, cardToken, customer.id);
-    if (!charge) {
-      throw new Error('Falha ao criar a cobrança.');
+    if (!charge || !charge.id) {
+      throw new Error('Failed to create charge.');
     }
     console.log('Charge created:', charge);
+
+    // Log dos valores solicitados
+    console.log('card_token:', cardToken);
+    console.log('customer_id:', customer.id);
+    console.log('charge_id:', charge.id); // Adicionando o log do charge_id
+    console.log('order_id:', order.id);
   } catch (error) {
     console.error('Erro ao processar pagamento:', error.message);
+    if (error.response) {
+      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
+    }
   }
 };
 
 checkout();
-
-// Função para validar a chave da API e criar uma transação
-const validateAndCheckout = async () => {
-  try {
-    // Validar API key
-    if (!process.env.PAGARME_API_KEY) {
-      throw new Error('Chave API Pagar.me não configurada');
-    }
-
-    // Inicializar cliente
-    const client = await pagarme.client.connect({
-      api_key: process.env.PAGARME_API_KEY
-    });
-
-    // Criar transação
-    const transaction = await client.transactions.create({
-      amount: 1000, // R$ 10,00
-      card_number: '4111111111111111',
-      card_holder_name: 'Cliente Teste',
-      card_expiration_date: '1225',
-      card_cvv: '123',
-      customer: {
-        external_id: '#123',
-        name: 'Cliente Teste',
-        email: 'cliente@teste.com',
-        type: 'individual',
-        country: 'br',
-        documents: [{
-          type: 'cpf',
-          number: '00000000000'
-        }]
-      }
-    });
-
-    console.log('Transação criada:', transaction);
-    return transaction;
-
-  } catch (error) {
-    console.error('Detalhes do erro:', {
-      message: error.message,
-      status: error.status,
-      response: error.response
-    });
-
-    if (error.response) {
-      console.error('Response data:', JSON.stringify(error.response.data, null, 2));
-    }
-
-    if (error.response?.status === 403) {
-      console.error('Erro de autenticação: Verifique sua chave API');
-    }
-    
-    throw error;
-  }
-};
-
-// Executar com tratamento
-validateAndCheckout().catch(error => {
-  console.error('Falha na operação:', error.message);
-  if (error.response) {
-    console.error('Response data:', JSON.stringify(error.response.data, null, 2));
-  }
-  process.exit(1);
-});

@@ -24,6 +24,8 @@ async function createOrder(orderData) {
             console.log('Pedido criado com sucesso com status "open".');
         }
 
+        console.log('Token gerado:', response.data.token); // Exibir o token gerado
+
         return response.data;
     } catch (error) {
         console.error('Erro ao criar o pedido:', error);

@@ -246,19 +246,19 @@ export default function Checkout() {
       const cardToken = await generateCardToken({
         number: formData.payment.cardNumber,
         holder_name: formData.payment.cardName,
-        holder_document: formData.identification.cpf || formData.identification.cnpj,
-        exp_month: formData.payment.expiry ? parseInt(formData.payment.expiry.split("/")[0], 10) : 0,
-        exp_year: parseInt((formData.payment.expiry ?? "00/00").split("/")[1], 10),
+        exp_month: parseInt(formData.payment.expiry?.split("/")[0] || "0"),
+        exp_year: parseInt(formData.payment.expiry?.split("/")[1] || "0"),
         cvv: formData.payment.cvv,
+        holder_document: formData.identification.cpf || formData.identification.cnpj,
         brand: cardFlag,
         billing_address: {
-          line_1: `${formData.address.number}, ${formData.address.street}, ${formData.address.district}`,
-          line_2: formData.address.complement || "",
+          country: 'BR',
+          state: formData.address.state,
+          line_1: `${formData.address.street}, ${formData.address.number}`,
+          line_2: formData.address.district,
           zip_code: formData.address.cep,
           city: formData.address.city,
-          state: formData.address.state,
-          country: "BR",
-        },
+        }
       });
       console.log('Card token generated:', cardToken);
 
@@ -590,7 +590,7 @@ export default function Checkout() {
                 />
                 {cardFlag && (
                   <Image
-                    src={cardFlags[cardFlag] || ""}
+                    src={cardFlags[cardFlag]}
                     alt={`Bandeira do cartão ${cardFlag}`}
                     width={50}
                     height={30}
